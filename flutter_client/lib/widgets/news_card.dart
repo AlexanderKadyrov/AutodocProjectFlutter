@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../generated/news.pb.dart' as proto;
 
-class KioskNewsCard extends StatelessWidget {
+class NewsCard extends StatelessWidget {
   final proto.NewsItem newsItem;
 
-  const KioskNewsCard({super.key, required this.newsItem});
+  const NewsCard({super.key, required this.newsItem});
 
   @override
   Widget build(BuildContext context) {

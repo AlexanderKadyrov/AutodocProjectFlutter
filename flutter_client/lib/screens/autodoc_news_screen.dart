@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../news_bridge.dart';
-import '../widgets/kiosk_news_card.dart';
+import '../widgets/news_card.dart';
 import '../generated/news.pb.dart' as proto;
 
 class AutodocNewsScreen extends StatefulWidget {
@@ -135,7 +135,7 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
               ),
               itemBuilder: (context, index) {
                 final item = _newsItems[index];
-                return KioskNewsCard(newsItem: item);
+                return NewsCard(newsItem: item);
               },
             ),
           ),
