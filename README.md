@@ -1,7 +1,7 @@
 # Тестовое мобильное приложение под macOS
 
 <p align="center">
-  <img alt="Flutter News view screenshot" src="screenshots/screenshot_1.png" width="600">
+  <img alt="Flutter News view screenshot" src="screenshots/screenshot_1.png" width="400">
 </p>
 
 Кроссплатформенное приложение, адаптированное под запуск на macOS для быстрого и удобного тестирования бизнес-логики и интерфейса на компьютере.
@@ -27,7 +27,7 @@
 
 *   **UI-Слой:** Flutter (Dart FFI для связи с ядром)
 *   **Общее ядро (KMP):** Kotlin 2.2.21+ (Multiplatform)
-*   **Асинхронность и Сеть:** Ktor 3.0.1 (движки Core, Content-Negotiation, Serialization, Darwin)
+*   **Асинхронность и Сеть:** kotlinx-coroutines 1.9.0, Ktor 3.0.1 (движки Core, Content-Negotiation, Serialization, Darwin)
 *   **Сериализация:** kotlinx.serialization
 *   **Сборка нативной части:** Gradle (Kotlin DSL) с адаптацией под таргет `macosX64` и компилятор LLVM в Xcode 26+.
 
@@ -38,20 +38,20 @@
 При разработке и локальной сборке проекта под macOS учтены следующие критически важные аспекты:
 
 1.  **Специфика таргетов Gradle (KMP 1.9.20+):** Прямая линковка через общие задачи (вроде `:shared_core:linkSharedMacosX64`) отключена. Необходимо явно передавать тип сборки (`Debug` / `Release`).
-2.  **Xcode 26+ Совместимость:** Проект разработан на Kotlin `2.2.21`
+2.  **Xcode 26+ Совместимость:** Проект переведен на Kotlin `2.2.21` для предотвращения падений LLVM-компилятора (`clang++ non-zero exit code`) на заголовочных файлах C++.
 3.  **Динамическое связывание FFI:** Загрузчик Dart FFI автоматически определяет корень монорепозитория во время локальной разработки относительно текущей рабочей директории запуска (`Directory.current.parent.path`), обеспечивая переносимость кода между машинами разработчиков:
-```dart
-final projectRoot = Directory.current.parent.path;
-final dylibPath = [
-  projectRoot,
-  'shared_core',
-  'build',
-  'bin',
-  'macosX64',
-  'debugShared',
-  'libnews_core.dylib',
-].join(Platform.pathSeparator);
-```
+    ```dart
+    final projectRoot = Directory.current.parent.path;
+    final dylibPath = [
+      projectRoot,
+      'shared_core',
+      'build',
+      'bin',
+      'macosX64',
+      'debugShared',
+      'libnews_core.dylib',
+    ].join(Platform.pathSeparator);
+    ```
 4.  **Безопасность (App Sandbox):** Для локальной отладки десктоп-версии под macOS временно отключена песочница в файле `DebugProfile.entitlements` (`com.apple.security.app-sandbox` установлен в `false`), чтобы Flutter-клиент имел права на чтение `.dylib` файла вне своего изолированного контейнера.
 
 ---
@@ -60,20 +60,20 @@ final dylibPath = [
 
 Для сборки и запуска всего стека выполните последовательно следующие команды:
 
-### Шаг 1: Генерация кода из Proto-контрактов
+### Шаг 0: Генерация кода из Proto-контрактов
 Сгенерируйте Dart-классы из ваших `.proto` файлов:
 ```bash
 protoc --dart_out=./flutter_client/lib/generated --proto_path=./proto ./proto/news.proto
 ```
 
-### Шаг 2: Компиляция KMP ядра
+### Шаг 1: Компиляция KMP ядра
 Перейдите в корень проекта, очистите старые артефакты и соберите отладочную динамическую библиотеку:
 ```bash
 ./gradlew clean :shared_core:linkDebugSharedMacosX64
 ```
 *(Для релизной сборки используйте команду `./gradlew :shared_core:linkReleaseSharedMacosX64`)*
 
-### Шаг 3: Установка зависимостей и запуск Flutter-клиента
+### Шаг 2: Установка зависимостей и запуск Flutter-клиента
 Перейдите в директорию клиента, очистите кэш, подтяните пакеты и запустите десктопное приложение под macOS:
 ```bash
 cd flutter_client
