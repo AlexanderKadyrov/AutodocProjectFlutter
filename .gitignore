@@ -44,3 +44,8 @@ build/
 # Сгенерированные файлы Protobuf (их не хранят в Git, так как они создаются из .proto)
 **/flutter_client/lib/generated/
 **/shared_core/src/commonMain/kotlin/generated/
+
+# Среда разработки IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
