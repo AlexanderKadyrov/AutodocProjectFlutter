@@ -113,7 +113,7 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Новости компании Autodoc',
+          'Новости',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
         ),
         centerTitle: true,
