@@ -22,16 +22,16 @@ typedef NativeFetchDart = ffi.Pointer<ffi.Uint8> Function(
 
 ffi.DynamicLibrary loadNativeLibrary() {
   final projectRoot = Directory.current.parent.path;
-    final dylibPath = [
-      projectRoot,
-      'shared_core',
-      'build',
-      'bin',
-      'macosX64',
-      'debugShared',
-      'libnews_core.dylib'
-    ].join(Platform.pathSeparator);
-    return ffi.DynamicLibrary.open(dylibPath);
+  final dylibPath = [
+    projectRoot,
+    'shared_core',
+    'build',
+    'bin',
+    'macosX64',
+    'debugShared',
+    'libnews_core.dylib',
+  ].join(Platform.pathSeparator);
+  return ffi.DynamicLibrary.open(dylibPath);
 }
 
 class NewsBridge {
