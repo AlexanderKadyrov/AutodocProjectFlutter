@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package autodoc.news;
+
+// Структура одной живой новости с сервера Autodoc
+message NewsItem {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  string published_date = 4;
+  string category_url = 5;
+  string image_url = 6;
+}
+
+// Пакет данных (Лента новостей), который полетит во Flutter из Kotlin
+message NewsResponse {
+  repeated NewsItem news = 1;
+  int32 total_count = 2;
+}

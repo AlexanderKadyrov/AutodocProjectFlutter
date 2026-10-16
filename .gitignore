@@ -1,0 +1,46 @@
+# ==========================================
+# Общие системные файлы macOS
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+*.icloud
+
+# ==========================================
+# Исключения для VS Code
+# ==========================================
+.vscode/
+*.code-workspace
+.history/
+
+# ==========================================
+# Исключения для Kotlin / Gradle (shared_core)
+# ==========================================
+**/shared_core/.gradle/
+**/shared_core/build/
+**/shared_core/out/
+.gradle/
+build/
+
+# Нативные бинарники, которые мы будем собирать в RAM для FFI моста
+*.so
+*.dylib
+*.dll
+
+# ==========================================
+# Исключения для Flutter (flutter_client)
+# ==========================================
+**/flutter_client/.dart_tool/
+**/flutter_client/.flutter-plugins
+**/flutter_client/.flutter-plugins-dependencies
+**/flutter_client/.packages
+**/flutter_client/build/
+
+# Файлы конфигурации конкретной машины разработчика
+**/flutter_client/pubspec.lock
+**/flutter_client/macos/Flutter/ephemeral/
+**/flutter_client/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Сгенерированные файлы Protobuf (их не хранят в Git, так как они создаются из .proto)
+**/flutter_client/lib/generated/
+**/shared_core/src/commonMain/kotlin/generated/
