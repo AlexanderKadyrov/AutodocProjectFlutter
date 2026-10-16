@@ -21,7 +21,6 @@ kotlin {
                 implementation("io.ktor:ktor-client-core:3.0.1")
                 implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation("com.squareup.wire:wire-runtime:5.1.0")
             }
         }
