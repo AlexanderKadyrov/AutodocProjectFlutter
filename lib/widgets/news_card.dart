@@ -12,6 +12,7 @@ class NewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = newsItem.title;
+    final description = newsItem.description;
     final imageUrl = newsItem.imageUrl;
 
     return Card(
@@ -46,7 +47,7 @@ class NewsCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title ?? 'Без названия',
+                      title ?? '',
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -54,6 +55,28 @@ class NewsCard extends StatelessWidget {
                         fontSize: 14,
                       ),
                     ),
+                    if (description != null && description.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                    const Spacer(),
+                    if (newsItem.publishedDate != null &&
+                        newsItem.publishedDate!.isNotEmpty)
+                      Text(
+                        newsItem.publishedDate!,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
+                      ),
                   ],
                 ),
               ),
