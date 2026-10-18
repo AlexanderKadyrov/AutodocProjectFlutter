@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/news_item.dart';
 import '../services/news_service.dart';
+import '../models/news_item.dart';
 import '../widgets/news_card.dart';
 
 class AutodocNewsScreen extends StatefulWidget {
@@ -16,11 +16,9 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   final ScrollController _scrollController = ScrollController();
 
   final List<NewsItem> _newsItems = [];
-  bool _isLoading = true;
-  bool _isMoreLoading = false;
-  bool _hasMoreData = true;
+  bool _hasMoreData = false;
+  bool _isLoading = false;
 
-  int _currentOffset = 1;
   final int _limit = 15;
 
   @override
@@ -37,20 +35,13 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   }
 
   Future<void> _loadNews({bool isRefresh = false}) async {
-    if (!isRefresh && (_isMoreLoading || !_hasMoreData)) return;
+    if (_isLoading || (!isRefresh && !_hasMoreData)) return;
 
-    setState(() {
-      if (isRefresh) {
-        _isLoading = true;
-      } else {
-        _isMoreLoading = true;
-      }
-    });
+    setState(() => _isLoading = true);
 
     final int currentOffset = isRefresh || _newsItems.isEmpty
         ? 1
-        : _newsItems.length + 1;
-
+        : _newsItems.length;
     final (news, _) = await _newsService.fetchLiveNews(
       offset: currentOffset,
       limit: _limit,
@@ -58,15 +49,12 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
 
     if (mounted) {
       setState(() {
-        if (isRefresh) {
-          _newsItems.clear();
-          _isLoading = false;
-        } else {
-          _isMoreLoading = false;
-        }
+        if (isRefresh) _newsItems.clear();
 
         _newsItems.addAll(news);
         _hasMoreData = news.length == _limit;
+
+        _isLoading = false;
       });
     }
   }
@@ -80,20 +68,11 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(strokeWidth: 4)),
-      );
+    if (_isLoading && _newsItems.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Новости',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Новости'), centerTitle: true),
       body: Column(
         children: [
           Expanded(
@@ -111,10 +90,10 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
                   NewsCard(newsItem: _newsItems[index]),
             ),
           ),
-          if (_isMoreLoading)
+          if (_isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CircularProgressIndicator(strokeWidth: 4)),
+              child: Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
