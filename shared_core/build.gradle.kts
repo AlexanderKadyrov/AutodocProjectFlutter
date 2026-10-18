@@ -9,6 +9,12 @@ repositories {
 }
 
 kotlin {
+    linuxX64("linuxX64") {
+        binaries.sharedLib {
+            baseName = "news_core" 
+        }
+    }
+
     macosX64("macosX64") {
         binaries.sharedLib {
             baseName = "news_core" 
