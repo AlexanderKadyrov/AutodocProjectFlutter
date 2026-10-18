@@ -19,7 +19,7 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   bool _isMoreLoading = false;
   bool _hasMoreData = true;
 
-  int _currentOffset = 0;
+  int _currentOffset = 1;
   final int _limit = 15;
 
   @override
@@ -36,7 +36,6 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   }
 
   Future<void> _loadInitialNews() async {
-    _currentOffset = 0;
     final (news, _) = await _newsService.fetchLiveNews(offset: _currentOffset, limit: _limit);
     
     if (mounted) {
@@ -79,7 +78,7 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Новости Autodoc', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+        title: const Text('Новости', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
         centerTitle: true,
       ),
       body: Column(
