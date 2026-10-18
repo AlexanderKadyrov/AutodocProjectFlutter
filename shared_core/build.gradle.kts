@@ -28,6 +28,13 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:3.0.1")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:3.0.1")
                 implementation("com.squareup.wire:wire-runtime:5.1.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+            }
+        }
+
+        val linuxX64Main by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-cio:3.0.1")
             }
         }
         
