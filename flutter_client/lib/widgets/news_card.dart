@@ -1,76 +1,65 @@
 import 'package:flutter/material.dart';
-
-import '../generated/news.pb.dart' as proto;
+import 'package:cached_network_image/cached_network_image.dart';
+import '../models/news_item.dart';
 
 class NewsCard extends StatelessWidget {
-  final proto.NewsItem newsItem;
+  final NewsItem newsItem;
 
   const NewsCard({super.key, required this.newsItem});
 
   @override
   Widget build(BuildContext context) {
+    final title = newsItem.title;
+    final description = newsItem.description;
+    final imageUrl = newsItem.imageUrl;
+
     return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       clipBehavior: Clip.antiAlias,
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            flex: 3,
-            child: newsItem.imageUrl.isNotEmpty
-                ? Image.network(
-                    newsItem.imageUrl,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.broken_image,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  )
-                : Container(color: Colors.grey[200]),
-          ),
+          if (imageUrl != null && imageUrl.isNotEmpty)
+            Expanded(
+              flex: 3,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
+            ),
           Expanded(
             flex: 2,
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    newsItem.publishedDate,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    newsItem.title,
-                    maxLines: 1,
+                    title ?? 'Без названия',
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: Text(
-                      newsItem.description,
+                  const SizedBox(height: 4),
+                  if (description != null && description.isNotEmpty)
+                    Text(
+                      description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[800],
-                        height: 1.3,
-                      ),
+                      style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
-                  ),
+                  const Spacer(),
+                  if (newsItem.publishedDate != null)
+                    Text(
+                      newsItem.publishedDate!,
+                      style: const TextStyle(color: Colors.grey, fontSize: 10),
+                    ),
                 ],
               ),
             ),
