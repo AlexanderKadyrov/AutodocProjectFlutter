@@ -5,7 +5,7 @@ import '../models/news_item.dart';
 class NewsService {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'https://autodoc.ru',
+      baseUrl: 'https://webapi.autodoc.ru',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
     ),
