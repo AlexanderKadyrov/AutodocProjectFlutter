@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/news_item.dart';
 import '../services/news_service.dart';
 import '../widgets/news_card.dart';
@@ -25,7 +26,7 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadInitialNews();
+    _loadNews(isRefresh: true);
     _scrollController.addListener(_onScroll);
   }
 
@@ -35,50 +36,62 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
     super.dispose();
   }
 
-  Future<void> _loadInitialNews() async {
-    final (news, _) = await _newsService.fetchLiveNews(offset: _currentOffset, limit: _limit);
-    
+  Future<void> _loadNews({bool isRefresh = false}) async {
+    if (!isRefresh && (_isMoreLoading || !_hasMoreData)) return;
+
+    setState(() {
+      if (isRefresh) {
+        _isLoading = true;
+      } else {
+        _isMoreLoading = true;
+      }
+    });
+
+    final int currentOffset = isRefresh || _newsItems.isEmpty
+        ? 1
+        : _newsItems.length + 1;
+
+    final (news, _) = await _newsService.fetchLiveNews(
+      offset: currentOffset,
+      limit: _limit,
+    );
+
     if (mounted) {
       setState(() {
+        if (isRefresh) {
+          _newsItems.clear();
+          _isLoading = false;
+        } else {
+          _isMoreLoading = false;
+        }
+
         _newsItems.addAll(news);
-        _isLoading = false;
-        _hasMoreData = news.length == _limit;
-      });
-    }
-  }
-
-  Future<void> _loadMoreNews() async {
-    if (_isMoreLoading || !_hasMoreData) return;
-
-    setState(() => _isMoreLoading = true);
-    _currentOffset += _limit; 
-    
-    final (news, _) = await _newsService.fetchLiveNews(offset: _currentOffset, limit: _limit);
-
-    if (mounted) {
-      setState(() {
-        _newsItems.addAll(news);
-        _isMoreLoading = false;
         _hasMoreData = news.length == _limit;
       });
     }
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      _loadMoreNews();
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadNews(isRefresh: false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator(strokeWidth: 4)));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(strokeWidth: 4)),
+      );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Новости', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24)),
+        title: const Text(
+          'Новости',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -89,12 +102,13 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
               padding: const EdgeInsets.all(24),
               itemCount: _newsItems.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, 
+                crossAxisCount: 2,
                 crossAxisSpacing: 24,
                 mainAxisSpacing: 24,
                 childAspectRatio: 0.85,
               ),
-              itemBuilder: (context, index) => NewsCard(newsItem: _newsItems[index]),
+              itemBuilder: (context, index) =>
+                  NewsCard(newsItem: _newsItems[index]),
             ),
           ),
           if (_isMoreLoading)
