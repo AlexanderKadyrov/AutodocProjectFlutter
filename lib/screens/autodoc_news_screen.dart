@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/news_service.dart';
 import '../models/news_item.dart';
 import '../widgets/news_card.dart';
+import 'webview_screen.dart';
 
 class AutodocNewsScreen extends StatefulWidget {
   const AutodocNewsScreen({super.key});
@@ -16,9 +17,8 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   final ScrollController _scrollController = ScrollController();
 
   final List<NewsItem> _newsItems = [];
-  bool _hasMoreData = false;
   bool _isLoading = false;
-
+  bool _hasMoreData = false;
   final int _limit = 15;
 
   @override
@@ -69,10 +69,19 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading && _newsItems.isEmpty) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator(strokeWidth: 4)),
+      );
     }
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Новости'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text(
+          'Новости',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -86,14 +95,31 @@ class _AutodocNewsScreenState extends State<AutodocNewsScreen> {
                 mainAxisSpacing: 24,
                 childAspectRatio: 0.85,
               ),
-              itemBuilder: (context, index) =>
-                  NewsCard(newsItem: _newsItems[index]),
+              itemBuilder: (context, index) {
+                final item = _newsItems[index];
+                return NewsCard(
+                  newsItem: item,
+                  onTap: (clickedItem) {
+                    final fullUrl = clickedItem.fullUrl ?? '';
+                    if (fullUrl.isEmpty) return;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => WebViewScreen(
+                          url: fullUrl,
+                          title: clickedItem.title ?? 'Новость',
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
           if (_isLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 4)),
             ),
         ],
       ),
